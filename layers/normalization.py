@@ -38,7 +38,7 @@ class BatchNormalization1DLayer(BaseLayer):
                         T.nnet.batch_normalization(inputs, self.gamma, self.beta, batch_mean, batch_std),
                         T.nnet.batch_normalization(inputs, self.gamma, self.beta, self.bn_mean, self.bn_std))
     def _collect_params(self):
-        return [self.gamma, self.beta]
+        return [self.gamma, self.beta, self.bn_mean, self.bn_std]
     def _collect_updates(self):
         return self.updates
 
@@ -76,7 +76,7 @@ class BatchNormalization2DLayer(BaseLayer):
                         T.nnet.batch_normalization(inputs, self.gamma.dimshuffle('x', 0, 'x', 'x'), self.beta.dimshuffle('x', 0, 'x', 'x'),\
                             self.bn_mean.dimshuffle('x', 0, 'x', 'x'), self.bn_std.dimshuffle('x', 0, 'x', 'x')))
     def _collect_params(self):
-        return [self.gamma, self.beta]
+        return [self.gamma, self.beta, self.bn_mean, self.bn_std]
     def _collect_updates(self):
         return self.updates
 
