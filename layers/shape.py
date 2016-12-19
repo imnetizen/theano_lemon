@@ -6,7 +6,7 @@ import theano.tensor as T
 from theano.tensor.signal.pool import pool_2d
 from collections import OrderedDict
 
-from layer import BaseLayer
+from .layer import BaseLayer
 
 class Flatten3DLayer(BaseLayer):
     def __init__(self, input_shape, output_shape, name = None):

@@ -5,7 +5,7 @@ import theano
 import theano.tensor as T
 from collections import OrderedDict
 
-from layer import BaseLayer
+from .layer import BaseLayer
 
 class BatchNormalization1DLayer(BaseLayer):
     def __init__(self, input_shape, momentum = 0.99, name = None):

@@ -5,7 +5,7 @@ import theano
 import theano.tensor as T
 from collections import OrderedDict
 
-from layer import BaseLayer
+from .layer import BaseLayer
 
 class Convolution2DLayer(BaseLayer):
     def __init__(self, input_shape, output_shape, kernel_shape,

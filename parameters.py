@@ -13,12 +13,14 @@ class BaseParameter(object):
     def filter_params(self, tag):
         return [pp for pp in self.params if pp.tag == tag]
     def save_params(self, postfix = None):
+        print('...weight save done')
         for pp in self.params:
             if postfix is None:
                 np.save(self.paramdir + pp.name + '.npy', pp.get_value())
             else:
                 np.save(self.paramdir + pp.name + '_' + tag + '.npy', pp.get_value())
     def load_params(self, postfix = None):
+        print('...weight load done')
         for pp in self.params:
             if postfix is None:
                 pp.set_value(np.load(self.paramdir + pp.name + '.npy'))
