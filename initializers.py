@@ -58,6 +58,16 @@ class GlorotNormal(BaseInitializer):
         std = np.sqrt(2.0 / ((n_in + n_out) * n_res))
         return np.random.normal(self.mean, std, shape).astype(theano.config.floatX)
 
+class HeNormal(BaseInitializer):
+    def __init__(self, mean = 0):
+        self.mean = mean
+    def _generate(self, shape):
+        n_in = shape[0]
+        n_out = shape[1]
+        n_res = np.prod(shape[2:])
+        std = np.sqrt(2.0 / (n_in * n_res))
+        return np.random.normal(self.mean, std, shape).astype(theano.config.floatX)
+
 class GlorotUniform(BaseInitializer):
     def __init__(self, mean = 0):
         self.mean = mean

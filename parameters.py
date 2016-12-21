@@ -2,6 +2,7 @@
 
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 from collections import OrderedDict
 
 class BaseParameter(object):
@@ -26,5 +27,32 @@ class BaseParameter(object):
                 pp.set_value(np.load(self.paramdir + pp.name + '.npy'))
             else:
                 pp.set_value(np.load(self.paramdir + pp.name + '_' + postfix + '.npy'))
- 
-            
+    def print_param_statistics(self, tag = None, postfix = None):
+        if tag is not None:
+            print(tag + 'statistics')
+            for pp in self.params:
+                if pp.tag is not tag:
+                    continue
+                pvalue = pp.get_value()
+                pvalue = np.reshape(pvalue, np.prod(pvalue.shape))
+                print('...' + pp.name + ' mean:', np.mean(pvalue), ' std:', np.std(pvalue), ' max:', np.max(pvalue), ' min:', np.min(pvalue))
+                fig = plt.figure()
+                plt.hist(pvalue, 100, alpha = 0.8)
+                if postfix is None:
+                    plt.savefig(self.paramdir + pp.name + '_hist.jpg')
+                else:
+                    plt.savefig(self.paramdir + pp.name + '_' + postfix + 'hist.jpg')
+                plt.close(fig)
+        else:
+            print('all parameter statistics')
+            for pp in self.params:
+                pvalue = pp.get_value()
+                pvalue = np.reshape(pvalue, np.prod(pvalue.shape))
+                print('...' + pp.name + ' mean:', np.mean(pvalue), ' std:', np.std(pvalue), ' max:', np.max(pvalue), ' min:', np.min(pvalue))
+                fig = plt.figure()
+                plt.hist(pvalue, 100, alpha = 0.8)
+                if postfix is None:
+                    plt.savefig(self.paramdir + pp.name + '_hist.jpg')
+                else:
+                    plt.savefig(self.paramdir + pp.name + '_' + postfix + 'hist.jpg')
+                plt.close(fig)
