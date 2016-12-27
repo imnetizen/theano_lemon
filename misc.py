@@ -40,3 +40,6 @@ def get_inputs(loss):
     loss_inputs = list(OrderedDict.fromkeys(loss_inputs)) # preserve order
     print('Inputs are : ', loss_inputs)
     return loss_inputs
+
+def filter_params(parmas, tag):
+    return [pp for pp in params if pp.tag == tag]

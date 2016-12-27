@@ -13,25 +13,43 @@ class BaseParameter(object):
             os.makedirs(self.paramdir)        
     def filter_params(self, tag):
         return [pp for pp in self.params if pp.tag == tag]
-    def save_params(self, postfix = None):
+    def save_params(self, tags = None, postfix = None):
         print('...weight save done')
-        for pp in self.params:
-            if postfix is None:
-                np.save(self.paramdir + pp.name + '.npy', pp.get_value())
-            else:
-                np.save(self.paramdir + pp.name + '_' + tag + '.npy', pp.get_value())
-    def load_params(self, postfix = None):
-        print('...weight load done')
-        for pp in self.params:
-            if postfix is None:
-                pp.set_value(np.load(self.paramdir + pp.name + '.npy'))
-            else:
-                pp.set_value(np.load(self.paramdir + pp.name + '_' + postfix + '.npy'))
-    def print_param_statistics(self, tag = None, postfix = None):
-        if tag is not None:
-            print(tag + 'statistics')
+        if tags is not None:
             for pp in self.params:
-                if pp.tag is not tag:
+                if pp.tag not in tags:
+                    continue
+                if postfix is None:
+                    np.save(self.paramdir + pp.name + '.npy', pp.get_value())
+                else:
+                    np.save(self.paramdir + pp.name + '_' + postfix + '.npy', pp.get_value())
+        else:
+            for pp in self.params:
+                if postfix is None:
+                    np.save(self.paramdir + pp.name + '.npy', pp.get_value())
+                else:
+                    np.save(self.paramdir + pp.name + '_' + postfix + '.npy', pp.get_value())
+    def load_params(self, tags = None, postfix = None):
+        print('...weight load done')
+        if tags is not None:
+            for pp in self.params:
+                if pp.tag not in tags:
+                    continue
+                if postfix is None:
+                    pp.set_value(np.load(self.paramdir + pp.name + '.npy'))
+                else:
+                    pp.set_value(np.load(self.paramdir + pp.name + '_' + postfix + '.npy'))
+        else:
+            for pp in self.params:
+                if postfix is None:
+                    pp.set_value(np.load(self.paramdir + pp.name + '.npy'))
+                else:
+                    pp.set_value(np.load(self.paramdir + pp.name + '_' + postfix + '.npy'))
+    def print_param_statistics(self, tags = None, postfix = None):
+        if tags is not None:
+            print(tags, 'statistics')
+            for pp in self.params:
+                if pp.tag not in tags:
                     continue
                 pvalue = pp.get_value()
                 pvalue = np.reshape(pvalue, np.prod(pvalue.shape))
@@ -41,7 +59,7 @@ class BaseParameter(object):
                 if postfix is None:
                     plt.savefig(self.paramdir + pp.name + '_hist.jpg')
                 else:
-                    plt.savefig(self.paramdir + pp.name + '_' + postfix + 'hist.jpg')
+                    plt.savefig(self.paramdir + pp.name + '_' + postfix + '_hist.jpg')
                 plt.close(fig)
         else:
             print('all parameter statistics')
@@ -54,5 +72,5 @@ class BaseParameter(object):
                 if postfix is None:
                     plt.savefig(self.paramdir + pp.name + '_hist.jpg')
                 else:
-                    plt.savefig(self.paramdir + pp.name + '_' + postfix + 'hist.jpg')
+                    plt.savefig(self.paramdir + pp.name + '_' + postfix + '_hist.jpg')
                 plt.close(fig)
