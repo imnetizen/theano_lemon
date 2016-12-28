@@ -24,8 +24,8 @@ from theano_lemon.layers.normalization import BatchNormalization1DLayer, BatchNo
 from theano_lemon.misc import merge_dicts, split_data, get_inputs
 
 np.random.seed(99999)
-#base_datapath = 'D:/Dropbox/Project/data/'
-base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+base_datapath = 'D:/Dropbox/Project/data/'
+#base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
 
 def train(name = 'cifar10'):
 
@@ -44,42 +44,41 @@ def train(name = 'cifar10'):
 
     graph = BaseGraph(name = name)
     graph.set_input(x)
-    graph.add_layers([Convolution2DLayer((3,32,32), (64,30,30), (3,3), use_bias = False, name = 'c1'),
-                      BatchNormalization2DLayer((64,30,30), name = 'bn1'),
+    graph.add_layers([Convolution2DLayer((3,32,32), (128,30,30), (3,3), use_bias = False, name = 'c1'),
+                      BatchNormalization2DLayer((128,30,30), name = 'bn1'),
                       ReLU(name = 'r1'),
-                      Padding2DLayer((64,30,30), (64,32,32), (1,1,1,1), name = 'p1'),
+                      Padding2DLayer((128,30,30), (128,32,32), (1,1,1,1), name = 'p1'),
 
-                      Convolution2DLayer((64,32,32), (64,30,30), (3,3), use_bias = False, name = 'c2'),
-                      BatchNormalization2DLayer((64,30,30), name = 'bn2'),
+                      Convolution2DLayer((128,32,32), (128,30,30), (3,3), use_bias = False, name = 'c2'),
+                      BatchNormalization2DLayer((128,30,30), name = 'bn2'),
                       ReLU(name = 'r2'),
-                      Padding2DLayer((64,30,30), (64,32,32), (1,1,1,1), name = 'p2'),
+                      Padding2DLayer((128,30,30), (128,32,32), (1,1,1,1), name = 'p2'),
 
-                      Pooling2DLayer((64,32,32), (64,16,16), (2,2), name = 'pool1'),
+                      Pooling2DLayer((128,32,32), (128,16,16), (2,2), name = 'pool1'),
 
-                      Convolution2DLayer((64,16,16), (64,14,14), (3,3), use_bias = False, name = 'c3'),
-                      BatchNormalization2DLayer((64,14,14), name = 'bn3'),
+                      Convolution2DLayer((128,16,16), (256,14,14), (3,3), use_bias = False, name = 'c3'),
+                      BatchNormalization2DLayer((256,14,14), name = 'bn3'),
                       ReLU(name = 'r3'),
-                      Padding2DLayer((64,14,14), (64,16,16), (1,1,1,1), name = 'p3'),
+                      Padding2DLayer((256,14,14), (256,16,16), (1,1,1,1), name = 'p3'),
 
-                      Convolution2DLayer((64,16,16), (64,14,14), (3,3), use_bias = False, name = 'c4'),
-                      BatchNormalization2DLayer((64,14,14), name = 'bn4'),
+                      Convolution2DLayer((256,16,16), (256,14,14), (3,3), use_bias = False, name = 'c4'),
+                      BatchNormalization2DLayer((256,14,14), name = 'bn4'),
                       ReLU(name = 'r4'),
-                      Padding2DLayer((64,14,14), (64,16,16), (1,1,1,1), name = 'p4'),
+                      Padding2DLayer((256,14,14), (256,16,16), (1,1,1,1), name = 'p4'),
 
-                      Pooling2DLayer((64,16,16), (64,8,8), (2,2), name = 'pool2'),
+                      Pooling2DLayer((256,16,16), (256,8,8), (2,2), name = 'pool2'),
 
-                      Convolution2DLayer((64,8,8), (64,6,6), (3,3), use_bias = False, name = 'c5'),
-                      BatchNormalization2DLayer((64,6,6), name = 'bn5'),
+                      Convolution2DLayer((256,8,8), (512,6,6), (3,3), use_bias = False, name = 'c5'),
+                      BatchNormalization2DLayer((512,6,6), name = 'bn5'),
                       ReLU(name = 'r5'),
-                      Padding2DLayer((64,6,6), (64,8,8), (1,1,1,1), name = 'p5'),
 
-                      Convolution2DLayer((64,8,8), (64,6,6), (3,3), use_bias = False, name = 'c6'),
-                      BatchNormalization2DLayer((64,6,6), name = 'bn6'),
+                      Convolution2DLayer((512,6,6), (512,4,4), (3,3), use_bias = False, name = 'c6'),
+                      BatchNormalization2DLayer((512,4,4), name = 'bn6'),
                       ReLU(name = 'r6'),
                       
-                      Flatten3DLayer((64,6,6), 2304, name = 'flatten1'),
+                      Flatten3DLayer((512,4,4), 8192, name = 'flatten1'),
 
-                      DenseLayer(2304, 2048, use_bias = False, name = 'd1'),
+                      DenseLayer(8192, 2048, use_bias = False, name = 'd1'),
                       BatchNormalization1DLayer(2048, name = 'bn7'),
                       ReLU(name = 'r7'),
                       DenseLayer(2048, 2048, use_bias = False, name = 'd2'),
@@ -116,8 +115,8 @@ def train(name = 'cifar10'):
                                  [loss, accuracy],
                                  allow_input_downcast = True)
 
-    lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.5)
-    hist = HistoryWithEarlyStopping(3, 5)
+    lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.2)
+    hist = HistoryWithEarlyStopping(3, 9)
 
     change_lr = False
     stop_run = False
@@ -157,6 +156,8 @@ def train(name = 'cifar10'):
             valid_accuracy.append(valid_batch_accuracy)
         hist.history['valid_loss'].append(np.mean(np.asarray(valid_loss)))
         hist.history['valid_accuracy'].append(np.mean(np.asarray(valid_accuracy)))
+        end_time = time.clock()
+        print('......time:', end_time - start_time)
 
         hist.print_history_recent()
         checker = hist.check_earlystopping()
@@ -188,4 +189,4 @@ def train(name = 'cifar10'):
     return hist
 
 if __name__ == '__main__':
-    train('cifar10_cnn')
+    train('cifar10_cnn_test')

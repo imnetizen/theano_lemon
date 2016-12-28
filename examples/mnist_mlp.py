@@ -19,10 +19,11 @@ from theano_lemon.controlls.scheduler import LearningRateMultiplyScheduler
 from theano_lemon.layers.dense import DenseLayer
 from theano_lemon.layers.activation import ReLU, Softmax
 from theano_lemon.layers.normalization import BatchNormalization1DLayer
+from theano_lemon.layers.dropout import DropoutLayer
 
 np.random.seed(99999)
-#base_datapath = 'D:/Dropbox/Project/data/'
-base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+base_datapath = 'D:/Dropbox/Project/data/'
+#base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
 
 def train(name = 'mnist'):
 
@@ -43,6 +44,7 @@ def train(name = 'mnist'):
     graph.set_input(x)
     graph.add_layers([DenseLayer(784, 1024, name = 'd1'),
                       ReLU(name = 'r1'),
+                      DropoutLayer(name = 'drop1'),
                       DenseLayer(1024, 1024, name = 'd2'),
                       ReLU(name = 'r2'),
                       DenseLayer(1024, 1024, name = 'd3'),
@@ -81,7 +83,7 @@ def train(name = 'mnist'):
                                  allow_input_downcast = True)
 
     lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.5)
-    hist = HistoryWithEarlyStopping(5, 3)
+    hist = HistoryWithEarlyStopping(5, 7)
 
     change_lr = False
     stop_run = False
@@ -121,6 +123,8 @@ def train(name = 'mnist'):
             valid_accuracy.append(valid_batch_accuracy)
         hist.history['valid_loss'].append(np.mean(np.asarray(valid_loss)))
         hist.history['valid_accuracy'].append(np.mean(np.asarray(valid_accuracy)))
+        end_time = time.clock()
+        print('......time:', end_time - start_time)
 
         hist.print_history_recent()
         checker = hist.check_earlystopping()
