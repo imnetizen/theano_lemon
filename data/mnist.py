@@ -8,11 +8,13 @@ import scipy.io
 # Download mnist_all.mat
 # Mapping [0,255] to [0,1]
 
-def uint_to_float(data):
-    return np.asarray(data, dtype = 'float32')
 
-def load_mnist(base_datapath, mode = 'flat'):
-    #mnist = scipy.io.loadmat('data/dataset/mnist_all.mat')
+def uint_to_float(data):
+    return np.asarray(data, dtype='float32')
+
+
+def load_mnist(base_datapath, mode='flat'):
+    # mnist = scipy.io.loadmat('data/dataset/mnist_all.mat')
     mnist = scipy.io.loadmat(base_datapath + 'mnist/mnist_all.mat')
     test0 = uint_to_float(mnist['test0']) / 255.0
     test1 = uint_to_float(mnist['test1']) / 255.0
@@ -73,7 +75,7 @@ def load_mnist(base_datapath, mode = 'flat'):
         pass
     elif mode == 'tensor':
         train_data = np.reshape(train_data, (train_data.shape[0], 1, 28, 28))
-        test_data = np.reshape(test_data, (test_data.shape[0], 1, 28, 28))        
+        test_data = np.reshape(test_data, (test_data.shape[0], 1, 28, 28))
     else:
         raise NotImplementedError('No such mode exist.')
 

@@ -8,12 +8,16 @@ import scipy.io
 # Download train_32x32.mat, test_32x32.mat
 # LCN
 
-def uint_to_float(data):
-    return np.asarray(data, dtype = 'float32')
-def double_to_int(data):
-    return np.asarray(data, dtype = 'int32')
 
-def load_svhn(mode = 'tensor'):
+def uint_to_float(data):
+    return np.asarray(data, dtype='float32')
+
+
+def double_to_int(data):
+    return np.asarray(data, dtype='int32')
+
+
+def load_svhn(mode='tensor'):
     svhn_train = scipy.io.loadmat(base_datapath + 'svhn/train_32x32.mat')
     svhn_test = scipy.io.loadmat(base_datapath + 'svhn/test_32x32.mat')
     train_data = uint_to_float(svhn_train['X']) / 255.0
@@ -53,20 +57,3 @@ def load_svhn(mode = 'tensor'):
         raise NotImplementedError('No such mode exist')
 
     return train_data, train_label, test_data, test_label
-
-#def lcn(data):
-#    if len(data.shape) == 4:
-#        flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
-#    elif len(data.shape) == 2:
-#        flat = data
-#    else:
-#        raise NotImplementedError('Not yet implemented')
-    
-#    mean = np.mean(flat, axis = 1)
-#    flat = flat - mean[:, np.newaxis]
-#    std = np.sqrt(np.sum(flat ** 2, axis = 1)) + 1e-7
-#    result = flat / std[:, np.newaxis]
-
-#    if len(data.shape) == 4:
-#        result = np.reshape(result, data.shape)
-#    return result

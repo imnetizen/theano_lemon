@@ -49,3 +49,4 @@ Temporary Items
 # Python misc
 .pyc
 __pycache__
+.npy

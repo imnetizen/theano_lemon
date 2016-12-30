@@ -4,7 +4,9 @@ import numpy as np
 import theano
 import theano.tensor as T
 
+
 class History(object):
+
     def __init__(self):
         self.history = {}
         self.history['train_loss'] = []
@@ -13,12 +15,15 @@ class History(object):
         self.history['valid_accuracy'] = []
         self.history['test_loss'] = []
         self.history['test_accuracy'] = []
+
     def add_key(self, key):
         self.history[key] = []
+
     def best_valid_loss(self):
         valid_loss_np = np.asarray(self.history['valid_loss'])
         return np.min(valid_loss_np), np.argmin(valid_loss_np)
-    def remove_history_after(self, index, keylist = None):
+
+    def remove_history_after(self, index, keylist=None):
         if keylist is None:
             self.history['train_loss'] = self.history['train_loss'][:index + 1]
             self.history['train_accuracy'] = self.history['train_loss'][:index + 1]
@@ -27,7 +32,8 @@ class History(object):
         else:
             for key in keylist:
                 self.history[key] = self.history[key][:index + 1]
-    def print_history_recent(self, keylist = None):
+
+    def print_history_recent(self, keylist=None):
         if keylist is None:
             print('......Train loss', self.history['train_loss'][-1])
             print('......Train accuracy', self.history['train_accuracy'][-1])
@@ -38,13 +44,16 @@ class History(object):
                 print('......' + key, self.history[key][-1])
     # TODO: export history to csv using pandas
 
+
 class HistoryWithEarlyStopping(History):
-    def __init__(self, max_patience = 10, max_change = 3):
+
+    def __init__(self, max_patience=10, max_change=3):
         super(HistoryWithEarlyStopping, self).__init__()
         self.patience = 0
         self.change = 0
         self.max_patience = max_patience
         self.max_change = max_change
+
     def check_earlystopping(self):
         val_loss = self.history['valid_loss'][-1]
         current_best_loss, current_best_epoch = self.best_valid_loss()
@@ -56,11 +65,11 @@ class HistoryWithEarlyStopping(History):
                 self.change += 1
                 print('......current change', self.change)
                 if self.change >= self.max_change:
-                    return 2 # we should load param, stop training, remove history
+                    return 2  # we should load param, stop training, remove history
                 else:
-                    return 1 # we should load param, change learning rate, remove history
+                    return 1  # we should load param, change learning rate, remove history
         else:
             self.patience = 0
             print('......current patience', self.patience)
             print('......current best valid loss', current_best_loss)
-            return 0 # we should save param
+            return 0  # we should save param

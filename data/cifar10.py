@@ -8,12 +8,16 @@ import scipy.io
 # Download data_batch_1.mat ~ data_batch_5.mat, test_batch.mat
 # GCN + ZCA whitening
 
-def uint_to_float(data):
-    return np.asarray(data, dtype = 'float32')
-def uint_to_int(data):
-    return np.asarray(data, dtype = 'int32')
 
-def load_cifar10(base_datapath, mode = 'tensor'):
+def uint_to_float(data):
+    return np.asarray(data, dtype='float32')
+
+
+def uint_to_int(data):
+    return np.asarray(data, dtype='int32')
+
+
+def load_cifar10(base_datapath, mode='tensor'):
     cifar_train1 = scipy.io.loadmat(base_datapath + 'cifar10/data_batch_1.mat')
     cifar_train2 = scipy.io.loadmat(base_datapath + 'cifar10/data_batch_2.mat')
     cifar_train3 = scipy.io.loadmat(base_datapath + 'cifar10/data_batch_3.mat')
@@ -65,26 +69,6 @@ def load_cifar10(base_datapath, mode = 'tensor'):
 
     return train_data, train_label, test_data, test_label
 
-#def gcn(data):
-#    mean = np.mean(data, axis = 0)
-#    std = np.std(data, axis = 0)
-#    result = (data - mean) / (std + 1e-7)
-#    return result
-
-#def zca(data, pc_matrix = None):
-#    # Should use after contrast normalization
-#    flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
-#    print('Flatten shape: ', flat.shape)
-
-#    if pc_matrix == None:        
-#        sigma = np.dot(flat.T, flat) / flat.shape[0]
-#        U,S,V = np.linalg.svd(sigma)
-#        newS = np.diag(1.0 / np.sqrt(S + 1e-4))
-#        pc_matrix = np.dot(np.dot(U, newS), np.transpose(U))
-
-#    white = np.dot(flat, pc_matrix)
-#    result = np.reshape(white, data.shape)
-#    return result, pc_matrix
 
 def label_to_real(label):
     if label == 0:
