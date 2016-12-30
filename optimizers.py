@@ -14,13 +14,16 @@ from collections import OrderedDict
 
 class BaseOptimizer(object):
     def __init__(self, learningrate_init = 0.001,
-                 clipnorm = None, clipvalue = None):
+                 clipnorm = None, clipvalue = None, block_tags = None):
         self.internals = []
         self.clipnorm = clipnorm
         self.clipvalue = clipvalue
         learningrate = np.array(learningrate_init).astype('float32')
         self.lr = theano.shared(learningrate, 'learningrate')
         self.lr.tag = 'learningrate'
+        self.block_tags = ['bn_mean', 'bn_std', 'flag'] # Manually
+        if block_tags is not None:
+            self.block_tags = self.block_tags + block_tags
         #inputs = graph.inputs([loss])
         #self.inputs = [var for var in inputs if isinstance(var, TensorVariable)]
     def _compute_gradients(self, loss, params):
@@ -40,8 +43,12 @@ class BaseOptimizer(object):
             params = [params]
         #self.loss = loss
         #self.params = params
-        grads = self._compute_gradients(loss, params)
-        updates = self._gradients_to_updates(params, grads)
+        unblocked_params = []
+        for pp in params:
+            if pp.tag not in self.block_tags:
+                unblocked_params.append(pp)
+        grads = self._compute_gradients(loss, unblocked_params)
+        updates = self._gradients_to_updates(unblocked_params, grads)
         return updates
     def get_internals(self):
         return self.internals

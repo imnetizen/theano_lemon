@@ -54,19 +54,19 @@ def load_svhn(mode = 'tensor'):
 
     return train_data, train_label, test_data, test_label
 
-def lcn(data):
-    if len(data.shape) == 4:
-        flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
-    elif len(data.shape) == 2:
-        flat = data
-    else:
-        raise NotImplementedError('Not yet implemented')
+#def lcn(data):
+#    if len(data.shape) == 4:
+#        flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
+#    elif len(data.shape) == 2:
+#        flat = data
+#    else:
+#        raise NotImplementedError('Not yet implemented')
     
-    mean = np.mean(flat, axis = 1)
-    flat = flat - mean[:, np.newaxis]
-    std = np.sqrt(np.sum(flat ** 2, axis = 1)) + 1e-7
-    result = flat / std[:, np.newaxis]
+#    mean = np.mean(flat, axis = 1)
+#    flat = flat - mean[:, np.newaxis]
+#    std = np.sqrt(np.sum(flat ** 2, axis = 1)) + 1e-7
+#    result = flat / std[:, np.newaxis]
 
-    if len(data.shape) == 4:
-        result = np.reshape(result, data.shape)
-    return result
+#    if len(data.shape) == 4:
+#        result = np.reshape(result, data.shape)
+#    return result

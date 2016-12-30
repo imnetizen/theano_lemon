@@ -65,26 +65,26 @@ def load_cifar10(base_datapath, mode = 'tensor'):
 
     return train_data, train_label, test_data, test_label
 
-def gcn(data):
-    mean = np.mean(data, axis = 0)
-    std = np.std(data, axis = 0)
-    result = (data - mean) / (std + 1e-7)
-    return result
+#def gcn(data):
+#    mean = np.mean(data, axis = 0)
+#    std = np.std(data, axis = 0)
+#    result = (data - mean) / (std + 1e-7)
+#    return result
 
-def zca(data, pc_matrix = None):
-    # Should use after contrast normalization
-    flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
-    print('Flatten shape: ', flat.shape)
+#def zca(data, pc_matrix = None):
+#    # Should use after contrast normalization
+#    flat = np.reshape(data, (data.shape[0], np.prod(data.shape[1:])))
+#    print('Flatten shape: ', flat.shape)
 
-    if pc_matrix == None:        
-        sigma = np.dot(flat.T, flat) / flat.shape[0]
-        U,S,V = np.linalg.svd(sigma)
-        newS = np.diag(1.0 / np.sqrt(S + 1e-4))
-        pc_matrix = np.dot(np.dot(U, newS), np.transpose(U))
+#    if pc_matrix == None:        
+#        sigma = np.dot(flat.T, flat) / flat.shape[0]
+#        U,S,V = np.linalg.svd(sigma)
+#        newS = np.diag(1.0 / np.sqrt(S + 1e-4))
+#        pc_matrix = np.dot(np.dot(U, newS), np.transpose(U))
 
-    white = np.dot(flat, pc_matrix)
-    result = np.reshape(white, data.shape)
-    return result, pc_matrix
+#    white = np.dot(flat, pc_matrix)
+#    result = np.reshape(white, data.shape)
+#    return result, pc_matrix
 
 def label_to_real(label):
     if label == 0:

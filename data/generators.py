@@ -19,7 +19,72 @@ class BaseGenerator(object):
         self.max_index = self.ndata // self.batchsize
     def get_minibatch(self, index):
         assert index <= self.max_index
-        return (self.data[self.order[self.batchsize *index: self.batchsize * (index+1)]],
-                self.label[self.order[self.batchsize *index: self.batchsize * (index+1)]])
+        batch_data = self.data[self.order[self.batchsize *index: self.batchsize * (index+1)]]
+        batch_label = self.label[self.order[self.batchsize *index: self.batchsize * (index+1)]]
+        return (batch_data, batch_label)
     def get_fullbatch(self):
         return (self.data, self.label)
+
+class ImageGenerator(BaseGenerator):
+    def __init__(self, name = None, batchsize = 128):
+        super(ImageGenerator, self).__init__(name, batchsize)
+        self.flip_lr = False
+        self.flip_ud = False
+    def set_flip_lr_true(self):
+        self.flip_lr = True
+    def set_flip_ud_true(self):
+        self.flip_ud = True
+    def rgb_to_yuv(self):
+        pass
+        #TODO
+    def gcn(self, mean = None, std = None):
+        if mean is None and std is None:
+            mean = np.mean(self.data, axis = 0)
+            std = np.std(self.data, axis = 0)
+        result = (self.data - mean) / (std + 1e-8)
+        self.data = result
+        return mean, std
+    def lcn(self):
+        if len(self.data.shape) == 4:
+            flat = np.reshape(self.data, (self.data.shape[0], np.prod(self.data.shape[1:])))
+        elif len(self.data.shape) == 2:
+            flat = self.data
+        else:
+            raise NotImplementedError('Not yet implemented')
+    
+        mean = np.mean(flat, axis = 1)
+        flat = flat - mean[:, np.newaxis]
+        #std = np.sqrt(np.sum(flat ** 2, axis = 1)) + 1e-8
+        std = np.std(flat, axis = 1)
+        result = flat / std[:, np.newaxis]
+
+        if len(self.data.shape) == 4:
+            result = np.reshape(result, self.data.shape)
+        self.data = result
+    def zca(self, pc_matrix = None):
+        flat = np.reshape(self.data, (self.data.shape[0], np.prod(self.data.shape[1:])))
+        #print('Flatten shape: ', flat.shape)
+       
+        if pc_matrix is None:
+            sigma = np.dot(flat.T, flat) / flat.shape[0]
+            U,S,V = np.linalg.svd(sigma)
+            newS = np.diag(1.0 / (np.sqrt(S) + 1e-8))
+            self.pc_matrix = np.dot(np.dot(U, newS), np.transpose(U))
+        else:
+            self.pc_matrix = pc_matrix
+
+        white = np.dot(flat, self.pc_matrix)
+        result = np.reshape(white, self.data.shape)
+        self.data = result
+        return self.pc_matrix
+    def get_minibatch(self, index):
+        assert index <= self.max_index
+        batch_data = self.data[self.order[self.batchsize *index: self.batchsize * (index+1)]]
+        batch_label = self.label[self.order[self.batchsize *index: self.batchsize * (index+1)]]
+        if self.flip_lr:
+            random_choice = np.random.permutation(self.batchsize)[:self.batchsize//2]
+            batch_data[random_choice] = batch_data[random_choice, :, :, ::-1]
+        if self.flip_ud:
+            random_choice = np.random.permutation(self.batchsize)[:self.batchsize//2]
+            batch_data[random_choice] = batch_data[random_choice, :, ::-1]
+        return (batch_data, batch_label)
