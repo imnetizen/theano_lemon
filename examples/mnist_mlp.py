@@ -24,6 +24,7 @@ from theano_lemon.layers.dropout import DropoutLayer
 np.random.seed(99999)
 base_datapath = 'D:/Dropbox/Project/data/'
 #base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+#base_datapath = '/home/khshim/data/'
 
 def train(name = 'mnist'):
 
@@ -151,7 +152,7 @@ def train(name = 'mnist'):
     hist.history['test_accuracy'].append(np.mean(np.asarray(test_accuracy)))
     hist.print_history_recent(['test_loss', 'test_accuracy'])
 
-    params_saver.print_param_statistics(['weight', 'bias'])
+    #params_saver.print_param_statistics(['weight', 'bias'])
 
     return hist
 

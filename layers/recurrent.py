@@ -5,11 +5,14 @@ import theano
 import theano.tensor as T
 from collections import OrderedDict
 
-from .layer import BaseLayer
+from .layer import BaseRecurrentLayer
 
-class ElmanRecurrentLayer(BaseLayer):
-    def __init__(self, input_shape, output_shape, use_bias = True, name = None):
-        super(ElmanRecurrentLayer, self).__init__(name)
+class ElmanRecurrentLayer(BaseRecurrentLayer):
+    def __init__(self, input_shape, output_shape, 
+                 gradient_steps = -1,
+                 state_save_index = -1, 
+                 unroll = True, use_bias = True, name = None):
+        super(ElmanRecurrentLayer, self).__init__(gradient_steps, state_save_index, unroll, name)
         self.input_shape = input_shape
         self.output_shape = output_shape
         self.use_bias = use_bias

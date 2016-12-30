@@ -27,6 +27,7 @@ from theano_lemon.misc import merge_dicts, split_data, get_inputs
 np.random.seed(99999)
 base_datapath = 'D:/Dropbox/Project/data/'
 #base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+#base_datapath = '/home/khshim/data/'
 
 def train(name = 'cifar10'):
 
@@ -191,7 +192,7 @@ def train(name = 'cifar10'):
 
     change_lr = False
     stop_run = False
-    for epoch in range(500):
+    for epoch in range(1000):
         if stop_run == True:
             params_saver.load_params()
             current_best_loss, current_best_epoch = hist.best_valid_loss()            
@@ -258,7 +259,7 @@ def train(name = 'cifar10'):
     hist.history['test_accuracy'].append(np.mean(np.asarray(test_accuracy)))
     hist.print_history_recent(['test_loss', 'test_accuracy'])
 
-    params_saver.print_param_statistics(['weight', 'bias'])
+    #params_saver.print_param_statistics(['weight', 'bias'])
 
     return hist
 
