@@ -41,3 +41,5 @@ func_result = func(input, mask, hidden_init)[0]
 
 print('Result', func_result.shape)
 print(func_result)
+
+print('Done!')

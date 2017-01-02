@@ -50,3 +50,6 @@ Temporary Items
 .pyc
 __pycache__
 .npy
+.pyproj
+.sln
+.vs
