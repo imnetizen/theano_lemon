@@ -29,13 +29,19 @@ class BaseLayer(object):
 
 class BaseRecurrentLayer(BaseLayer):
 
-    def __init__(self, gradient_steps=-1, state_save_index=-1, unroll=True, name=None):
+    def __init__(self, gradient_steps=-1, output_return_index=[-1],
+                 precompute=False, unroll=False, backward=False, name=None):
         self.gradient_steps = gradient_steps
-        self.state_save_index = state_save_index
+        self.output_return_index = output_return_index
+        assert isinstance(output_return_index, list)
+        self.precompute = precompute
         self.unroll = unroll
+        self.backward = backward
         self.name = name
+        if unroll and gradient_steps != -1:
+            raise ValueError('Network Unroll requires exact gradient step')
 
-    def _compute_output(self, inputs):
+    def _compute_output(self, inputs, masks, hidden_init):
         raise NotImplementedError('Abstract class method')
 
     def _collect_params(self):  # Trained by optimizers
@@ -44,8 +50,8 @@ class BaseRecurrentLayer(BaseLayer):
     def _collect_updates(self):  # Additional updates
         raise NotImplementedError('Abstract class method')
 
-    def get_output(self, inputs):
-        output = self._compute_output(inputs)
+    def get_output(self, inputs, masks, hidden_init):
+        output = self._compute_output(inputs, masks, hidden_init)
         params = self._collect_params()
         updates = self._collect_updates()
         return output, params, updates

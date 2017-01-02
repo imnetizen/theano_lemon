@@ -23,6 +23,36 @@ class ReLU(BaseLayer):
         return OrderedDict()
 
 
+class Linear(BaseLayer):
+
+    def __init__(self, name=None):
+        super(ReLU, self).__init__(name)
+
+    def _compute_output(self, inputs):
+        return inputs
+
+    def _collect_params(self):
+        return []
+
+    def _collect_updates(self):
+        return OrderedDict()
+
+
+class Tanh(BaseLayer):
+
+    def __init__(self, name = None):
+        super(BaseLayer, self).__init__(name)
+
+    def _compute_output(self, inputs):
+        return T.tanh(inputs)
+
+    def _collect_params(self):
+        return []
+
+    def _collect_updates(self):
+        return OrderedDict()
+
+
 class ELU(BaseLayer):
 
     def __init__(self, alpha=1.0, name=None):
