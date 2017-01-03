@@ -6,8 +6,10 @@ import theano.tensor as T
 
 from theano_lemon.layers.recurrent import ElmanRecurrentLayer
 
-RNN = ElmanRecurrentLayer(2, 3, out_activation = 'relu', output_return_index = [-1],
-                         backward=True, name='RNNtest')
+RNN = ElmanRecurrentLayer(2, 3, out_activation = 'relu', output_return_index = [0,1,2,3],
+                          precompute=True, unroll=True,
+                          gradient_steps = 4,
+                          backward=False, name='RNNtest')
 
 W_value = np.array([[-1, 0, 1], [0, 1, 1]], dtype = theano.config.floatX)
 U_value = np.array([[-2, -1, 0], [1, 2, 3], [0, 0, 1]], dtype = theano.config.floatX)
@@ -21,7 +23,7 @@ print('U', RNN.U.get_value())
 input = np.array([[[0, 1], [1, 2], [2, 3], [-1, -2]],
                   [[-1, 2], [0, 0], [1, 2], [-1, -1]],
                   [[0, 1], [2, 1], [-1,-1], [0,0]]], dtype = theano.config.floatX)
-mask = np.array([[1,1,0,0],[1,1,1,0],[1,1,1,0]], dtype = 'int32')
+mask = np.array([[1,1,1,1],[1,1,1,1],[1,1,1,1]], dtype = 'int32')
 hidden_init = np.array([[1,1,1], [2,2,2], [-1,-1,-1]], dtype = theano.config.floatX)
 
 X = T.ftensor3('X')

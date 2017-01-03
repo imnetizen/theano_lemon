@@ -47,9 +47,9 @@ Temporary Items
 .apdisk
 
 # Python misc
-.pyc
+*.pyc
 __pycache__
-.npy
-.pyproj
-.sln
+*.npy
+*.pyproj
+*.sln
 .vs

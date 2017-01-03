@@ -38,7 +38,7 @@ class BaseRecurrentLayer(BaseLayer):
         self.unroll = unroll
         self.backward = backward
         self.name = name
-        if unroll and gradient_steps != -1:
+        if unroll and gradient_steps <= 0:
             raise ValueError('Network Unroll requires exact gradient step')
 
     def _compute_output(self, inputs, masks, hidden_init):

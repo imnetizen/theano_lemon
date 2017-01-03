@@ -4,7 +4,6 @@ import numpy as np
 import theano
 import theano.tensor as T
 from collections import OrderedDict
-from .activation import Tanh, Sigmoid
 from .layer import BaseRecurrentLayer
 
 
@@ -49,19 +48,37 @@ class ElmanRecurrentLayer(BaseRecurrentLayer):
         else:
             raise ValueError('Not yet considered')
 
-        # TODO: precompute input
+        if self.precompute:
+            additional_dims = tuple(inputs.shape[k] for k in range(2, inputs.ndim))
+            inputs = T.reshape(inputs, (sequence_length*batch_num,) + additional_dims)
+            inputs = T.dot(inputs, self.W)
+            additional_dims = tuple(inputs.shape[k] for k in range(1, inputs.ndim))
+            inputs = T.reshape(inputs, (sequence_length, batch_num,) + additional_dims)
 
         def step(input, hidden):
-            # TODO: precompute input
-            return activation(T.dot(input, self.W) + T.dot(hidden, self.U) + self.b)
+            if self.precompute:
+                return activation(input + T.dot(hidden, self.U) + self.b)
+            else:
+                return activation(T.dot(input, self.W) + T.dot(hidden, self.U) + self.b)
 
         def step_masked(input, mask, hidden):
             hidden_computed = step(input, hidden)
             return T.switch(mask, hidden_computed, hidden)
 
         if self.unroll:
-            # TODO
-            pass
+            assert self.gradient_steps > 0
+            counter = range(self.gradient_steps)
+            if self.backward:
+                counter = counter[::-1]
+            iter_output = []
+            outputs_info = [hidden_init]
+            for index in counter:
+                step_input = [inputs[index], masks[index]] + outputs_info
+                step_output = step_masked(*step_input)
+                iter_output.append(step_output)
+                outputs_info = [iter_output[-1]]
+            hidden_output = T.stack(iter_output, axis=0)
+
         else:
             hidden_output = theano.scan(fn=step_masked,
                                         sequences=[inputs, masks],
@@ -74,6 +91,7 @@ class ElmanRecurrentLayer(BaseRecurrentLayer):
         hidden_output_return = hidden_output[self.output_return_index]
         # change to (n_batch, n_timesteps, n_features)
         hidden_output_return = hidden_output_return.dimshuffle(1, 0, *range(2, hidden_output_return.ndim))
+        #hidden_output_return = hidden_output
         if self.backward:
             hidden_output_return = hidden_output_return[:, ::-1]
 
