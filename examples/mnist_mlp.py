@@ -72,7 +72,7 @@ def train(name = 'mnist'):
     params_saver = BaseParameter(params, name+'_params/')    
 
     GlorotNormal().initialize(params_saver.filter_params('weight'))
-    Constant(0).initialize(params_saver.filter_params('bias'))
+    # Constant(0).initialize(params_saver.filter_params('bias'))
     params_saver.save_params()
 
     train_func = theano.function(inputs,

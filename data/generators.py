@@ -122,3 +122,28 @@ class ImageGenerator(BaseGenerator):
             random_choice = np.random.permutation(self.batchsize)[:self.batchsize//2]
             batch_data[random_choice] = batch_data[random_choice, :, ::-1]
         return (batch_data, batch_label)
+
+
+class CharacterGenerator(BaseGenerator):
+
+    def __init__(self, name=None, batchsize=128, bucket=0, align=32):
+        super(CharacterGenerator, self).__init__(name, batchsize)
+        self.bucket = bucket
+        self.align = align
+        
+    def initialize(self, data, sort=False):
+        if sort:
+            self.data = sorted(data, key=len)  # list of sentences (strings)
+        else:
+            self.data = data
+        self.ndata = len(data)
+        
+        if self.bucket > 0:
+            assert sort  # To use bucketing, we should sort sentences
+            self.bucket_key = []
+            for ind in range(self.ndata // self.bucket, self.ndata, self.ndata // self.bucket):
+                self.bucket_key.append(len(self.data[ind]))
+            self.bucket_key = self.bucket_key[:self.bucket-1]
+
+
+
