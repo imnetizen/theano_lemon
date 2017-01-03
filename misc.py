@@ -47,3 +47,9 @@ def get_inputs(loss):
 
 def filter_params(parmas, tag):
     return [pp for pp in params if pp.tag == tag]
+
+def print_tags_params(params):
+    tagset = set()
+    for pp in params:
+        tagset.add(pp.tag)
+    print('Tags are : ', tagset)
