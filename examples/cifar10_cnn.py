@@ -33,35 +33,29 @@ def train(name = 'cifar10'):
     train_data, train_label, test_data, test_label = load_cifar10(base_datapath, 'tensor')
     train_data, train_label, valid_data, valid_label = split_data(train_data, train_label, 45000)
 
-    #train_gen = BaseGenerator('train', 64)
-    #train_gen.initialize(train_data, train_label)
-    #test_gen = BaseGenerator('test', 64)
-    #test_gen.initialize(test_data, test_label)
-    #valid_gen = BaseGenerator('valid', 64)
-    #valid_gen.initialize(valid_data, valid_label)
-
-    train_gen = ImageGenerator('train', 128)
+    train_gen = ImageGenerator('train', 64)
     train_gen.initialize(train_data, train_label)
     train_gen.rgb_to_yuv()
     gcn_mean, gcn_std = train_gen.gcn()
     #pc_matrix = train_gen.zca()
     train_gen.set_flip_lr_true()
-    test_gen = ImageGenerator('test', 128)
+    test_gen = ImageGenerator('test', 64)
     test_gen.initialize(test_data, test_label)
     test_gen.rgb_to_yuv()
     test_gen.gcn(gcn_mean, gcn_std)
     #test_gen.zca(pc_matrix)
     test_gen.set_flip_lr_true()
-    valid_gen = ImageGenerator('valid', 128)
+    valid_gen = ImageGenerator('valid', 64)
     valid_gen.initialize(valid_data, valid_label)
     valid_gen.rgb_to_yuv()
     valid_gen.gcn(gcn_mean, gcn_std)
     #valid_gen.zca(pc_matrix)
     valid_gen.set_flip_lr_true()
 
-
     x= T.ftensor4('X')
     y = T.ivector('y')
+
+    # network like VGG-16
 
     graph = BaseGraph(name = name)
     graph.set_input(x)
@@ -152,12 +146,17 @@ def train(name = 'cifar10'):
                       Flatten3DLayer((512,1,1), 512, name = 'flatten1'),
                       DropoutLayer(0.5, rescale = True, name = 'drop9'),
 
-                      DenseLayer(512, 512, use_bias = False, name = 'd1'),
-                      BatchNormalization1DLayer(512, name = 'bn14'),
+                      DenseLayer(512, 1024, use_bias = False, name = 'd1'),
+                      BatchNormalization1DLayer(1024, name = 'bn14'),
                       ReLU(name = 'r14'),
                       DropoutLayer(0.5, rescale = True, name = 'drop10'),
 
-                      DenseLayer(512, 10, name = 'd2'),
+                      DenseLayer(1024, 1024, use_bias = False, name = 'd2'),
+                      BatchNormalization1DLayer(1024, name = 'bn15'),
+                      ReLU(name = 'r15'),
+                      DropoutLayer(0.5, rescale = True, name = 'drop11'),
+
+                      DenseLayer(1024, 10, name = 'd3'),
                       Softmax(name = 'softmax1')
                       ])
 
@@ -188,8 +187,8 @@ def train(name = 'cifar10'):
                                  [loss, accuracy],
                                  allow_input_downcast = True)
 
-    lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.5)
-    hist = HistoryWithEarlyStopping(20, 5)
+    lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.2)
+    hist = HistoryWithEarlyStopping(50, 5)
 
     train_start_time = time.clock()
 
@@ -272,4 +271,4 @@ def train(name = 'cifar10'):
     return hist
 
 if __name__ == '__main__':
-    train('cifar10_very_big_zca')
+    train('cifar10_trying_under10')
