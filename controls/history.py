@@ -63,11 +63,14 @@ class HistoryWithEarlyStopping(History):
             print('......current best valid loss', current_best_loss)
             if self.patience >= self.max_patience:
                 self.change += 1
+                self.patience = 0
                 print('......current change', self.change)
                 if self.change >= self.max_change:
                     return 2  # we should load param, stop training, remove history
                 else:
                     return 1  # we should load param, change learning rate, remove history
+            else:
+                return 3  # we should keep training
         else:
             self.patience = 0
             print('......current patience', self.patience)

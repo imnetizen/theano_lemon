@@ -13,8 +13,8 @@ from theano_lemon.parameters import BaseParameter
 from theano_lemon.data.generators import BaseGenerator, ImageGenerator
 from theano_lemon.data.cifar10 import load_cifar10
 
-from theano_lemon.controlls.history import HistoryWithEarlyStopping
-from theano_lemon.controlls.scheduler import LearningRateMultiplyScheduler
+from theano_lemon.controls.history import HistoryWithEarlyStopping
+from theano_lemon.controls.scheduler import LearningRateMultiplyScheduler
 from theano_lemon.layers.dense import DenseLayer
 from theano_lemon.layers.activation import ReLU, Softmax
 from theano_lemon.layers.convolution import Convolution2DLayer, Padding2DLayer
@@ -25,8 +25,7 @@ from theano_lemon.layers.normalization import BatchNormalization1DLayer, BatchNo
 from theano_lemon.misc import merge_dicts, split_data, get_inputs
 
 np.random.seed(99999)
-base_datapath = 'D:/Dropbox/Project/data/'
-#base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
 #base_datapath = '/home/khshim/data/'
 
 def train(name = 'cifar10'):
@@ -178,7 +177,7 @@ def train(name = 'cifar10'):
     params_saver = BaseParameter(params, name+'_params/')    
 
     GlorotNormal().initialize(params_saver.filter_params('weight'))
-    Constant(0).initialize(params_saver.filter_params('bias'))
+    # Constant(0).initialize(params_saver.filter_params('bias'))
     params_saver.save_params()
 
     train_func = theano.function(inputs,
@@ -247,6 +246,11 @@ def train(name = 'cifar10'):
         elif checker == 2:
             change_lr = False
             stop_run = True
+        elif checker == 3:
+            change_lr = False
+            stop_run = False
+        else:
+            raise NotImplementedError('Not supported checker type')
 
     train_end_time = time.clock()
     print('...Total Train time:', train_end_time - train_start_time)

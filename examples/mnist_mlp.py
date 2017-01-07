@@ -12,18 +12,17 @@ from theano_lemon.graph import BaseGraph
 from theano_lemon.parameters import BaseParameter
 from theano_lemon.data.generators import BaseGenerator
 from theano_lemon.data.mnist import load_mnist
-from theano_lemon.misc import split_data, get_inputs, merge_dicts
+from theano_lemon.misc import split_data, get_inputs, merge_dicts, filter_params
 
-from theano_lemon.controlls.history import HistoryWithEarlyStopping
-from theano_lemon.controlls.scheduler import LearningRateMultiplyScheduler
+from theano_lemon.controls.history import HistoryWithEarlyStopping
+from theano_lemon.controls.scheduler import LearningRateMultiplyScheduler
 from theano_lemon.layers.dense import DenseLayer
 from theano_lemon.layers.activation import ReLU, Softmax
 from theano_lemon.layers.normalization import BatchNormalization1DLayer
 from theano_lemon.layers.dropout import DropoutLayer
 
 np.random.seed(99999)
-base_datapath = 'D:/Dropbox/Project/data/'
-#base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
 #base_datapath = '/home/khshim/data/'
 
 def train(name = 'mnist'):
@@ -44,14 +43,21 @@ def train(name = 'mnist'):
     graph = BaseGraph(name = name)
     graph.set_input(x)
     graph.add_layers([DenseLayer(784, 1024, name = 'd1'),
-                      ReLU(name = 'r1'),
-                      DropoutLayer(name = 'drop1'),
+                      BatchNormalization1DLayer(1024, name = 'bn1'),
+                      ReLU(name = 'r1'),                      
+                      #DropoutLayer(name = 'drop1'),
                       DenseLayer(1024, 1024, name = 'd2'),
-                      ReLU(name = 'r2'),
+                      BatchNormalization1DLayer(1024, name = 'bn2'),
+                      ReLU(name = 'r2'),                      
+                      #DropoutLayer(name = 'drop2'),
                       DenseLayer(1024, 1024, name = 'd3'),
-                      ReLU(name = 'r3'),
+                      BatchNormalization1DLayer(1024, name = 'bn3'),
+                      ReLU(name = 'r3'),                      
+                      #DropoutLayer(name = 'drop3'),
                       DenseLayer(1024, 1024, name = 'd4'),
-                      ReLU(name = 'r4'),
+                      BatchNormalization1DLayer(1024, name = 'bn4'),
+                      ReLU(name = 'r4'),                      
+                      #DropoutLayer(name = 'drop4'),
                       DenseLayer(1024, 10, name = 'd5'),
                       Softmax(name = 's1')
                       ])
@@ -60,7 +66,7 @@ def train(name = 'mnist'):
     params = graph.get_params()
     internal_updates = graph.get_updates()
 
-    loss = CategoricalCrossentropy().get_loss(output, y) 
+    loss = CategoricalCrossentropy().get_loss(output, y)
     accuracy = CategoricalAccuracy().get_loss(output, y)
 
     adam = Adam()
@@ -84,11 +90,11 @@ def train(name = 'mnist'):
                                  allow_input_downcast = True)
 
     lr_scheduler = LearningRateMultiplyScheduler(adam.lr, 0.5)
-    hist = HistoryWithEarlyStopping(5, 7)
+    hist = HistoryWithEarlyStopping(10, 5)
 
     change_lr = False
     stop_run = False
-    for epoch in range(500):
+    for epoch in range(1000):
         if stop_run == True:
             params_saver.load_params()
             current_best_loss, current_best_epoch = hist.best_valid_loss()            
@@ -139,6 +145,11 @@ def train(name = 'mnist'):
         elif checker == 2:
             change_lr = False
             stop_run = True
+        elif checker == 3:
+            change_lr = False
+            stop_run = False
+        else:
+            raise NotImplementedError('Not supported checker type')
 
     graph.change_flag(-1)
     test_loss = []

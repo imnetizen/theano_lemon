@@ -14,8 +14,8 @@ from theano_lemon.data.generators import CharacterGenerator
 from theano_lemon.data.nietzsche import load_nietzsche
 #from theano_lemon.misc import split_data, get_inputs, merge_dicts
 
-#from theano_lemon.controlls.history import HistoryWithEarlyStopping
-#from theano_lemon.controlls.scheduler import LearningRateMultiplyScheduler
+#from theano_lemon.controls.history import HistoryWithEarlyStopping
+#from theano_lemon.controls.scheduler import LearningRateMultiplyScheduler
 #from theano_lemon.layers.dense import DenseLayer
 #from theano_lemon.layers.activation import ReLU, Softmax
 #from theano_lemon.layers.recurrent import LSTMRecurrentLayer

@@ -12,7 +12,7 @@ class BaseGenerator(object):
     def initialize(self, data, label):
         self.data = data
         self.label = label
-        self.ndata = data.shape[0]
+        self.ndata = len(data)  # data.shape[0]
         self.order = np.random.permutation(self.ndata)
         self.max_index = self.ndata // self.batchsize
 
@@ -130,20 +130,26 @@ class CharacterGenerator(BaseGenerator):
         super(CharacterGenerator, self).__init__(name, batchsize)
         self.bucket = bucket
         self.align = align
-        
-    def initialize(self, data, sort=False):
-        if sort:
-            self.data = sorted(data, key=len)  # list of sentences (strings)
-        else:
-            self.data = data
+
+    def initialize(self, data, label):
+        self.data = data
+        self.characters = label
         self.ndata = len(data)
+        self.nchar = len(label)
         
-        if self.bucket > 0:
-            assert sort  # To use bucketing, we should sort sentences
-            self.bucket_key = []
-            for ind in range(self.ndata // self.bucket, self.ndata, self.ndata // self.bucket):
-                self.bucket_key.append(len(self.data[ind]))
-            self.bucket_key = self.bucket_key[:self.bucket-1]
+    #def initialize(self, data, sort=False):
+    #    if sort:
+    #        self.data = sorted(data, key=len)  # list of sentences (strings)
+    #    else:
+    #        self.data = data
+    #    self.ndata = len(data)
+        
+    #    if self.bucket > 0:
+    #        assert sort  # To use bucketing, we should sort sentences
+    #        self.bucket_key = []
+    #        for ind in range(self.ndata // self.bucket, self.ndata, self.ndata // self.bucket):
+    #            self.bucket_key.append(len(self.data[ind]))
+    #        self.bucket_key = self.bucket_key[:self.bucket-1]
 
 
 

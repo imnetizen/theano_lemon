@@ -10,7 +10,7 @@ from .layer import BaseLayer
 
 class DropoutLayer(BaseLayer):
 
-    def __init__(self, drop_probability=0.5, rescale=True, name=None):
+    def __init__(self, drop_probability=0.3, rescale=True, name=None):
         super(DropoutLayer, self).__init__(name)
         self.drop_probability = drop_probability
         self.flag = theano.shared(1, 'flag')  # 1: train / -1: evaluation

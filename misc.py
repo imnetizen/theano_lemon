@@ -45,7 +45,7 @@ def get_inputs(loss):
     return loss_inputs
 
 
-def filter_params(parmas, tag):
+def filter_params(params, tag):
     return [pp for pp in params if pp.tag == tag]
 
 def print_tags_params(params):

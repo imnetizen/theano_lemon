@@ -50,3 +50,27 @@ class SquareError(BaseObjective):
 
     def get_loss(self, predict, label):
         return T.mean(T.square(predict - label))
+
+class L1norm(BaseObjective):
+
+    def __init__(self, name=None):
+        self.tag = 'l1norm'
+        super(L1norm, self).__init__(name)
+
+    def get_loss(self, params):
+        sum = 0
+        for pp in params:
+            sum += T.sum(T.abs_(pp))
+        return sum
+
+class L2norm(BaseObjective):
+
+    def __init__(self, name=None):
+        self.tag = 'l2norm'
+        super(L2norm, self).__init__(name)
+
+    def get_loss(self, params):
+        sum = 0
+        for pp in params:
+            sum += T.sum(T.square(pp))
+        return sum

@@ -43,7 +43,7 @@ def split_into_sentences(text):
     text = text.replace("<prd>",".")
     sentences = text.split("<stop>")
     sentences = sentences[:-1]
-    sentences = [s.strip() for s in sentences if len(s) > 5]
+    sentences = [s.strip() for s in sentences if len(s) > 16]
     return sentences
 
 
@@ -53,7 +53,7 @@ def load_nietzsche(base_datapath):
     print('Corpus length: ', len(corpus))
 
     characters = sorted(list(set(corpus)))
-    #print('Total characters: ', len(characters))
+    # print('Total characters: ', len(characters))
     corpus = corpus.replace('\n', ' ')
     corpus = corpus.replace(characters[-4], ' ')
     corpus = corpus.replace(characters[-3], ' ')
@@ -71,5 +71,5 @@ def load_nietzsche(base_datapath):
 
 
 if __name__ == '__main__':
-    base_datapath = 'C:/Users/skhu2/Dropbox/Project/data/'
+    base_datapath = 'D:/Dropbox/Project/data/'
     load_nietzsche(base_datapath)
